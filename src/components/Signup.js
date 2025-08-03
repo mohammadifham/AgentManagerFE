@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import API from '../services/api';
+import './AuthForm.css';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
   const [formData, setFormData] = useState({
-    // name: '',
     email: '',
-    // phone: '',
     password: '',
   });
+
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -19,31 +20,59 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await fetch(`http://localhost:5000/api/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    });
-    res.json()
-    .then(response=> setMessage(response.msg ))
-    .catch((err)=>  setMessage(err.rmsg || 'Signup failed'))
 
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        navigate('/login');
+      } else {
+        setMessage(data.msg || 'Signup failed');
+      }
     } catch (err) {
-      setMessage(err.response?.data?.message || 'Signup failed');
+      setMessage(err.message || 'Something went wrong');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Signup</h2>
-      {/* <input name="name" placeholder="Name" onChange={handleChange} required /> */}
-      <input name="email" placeholder="Email" onChange={handleChange} required />
-      {/* <input name="phone" placeholder="Phone" onChange={handleChange} required /> */}
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-      <button type="submit">Signup</button>
-      {message && <p>{message}</p>}
-    </form>
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2>Agent Manager Signup</h2>
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Signup</button>
+        {message && <p className="error-msg">{message}</p>}
+        <button
+          type="button"
+          className="secondary-btn"
+          onClick={() => navigate('/login')}
+        >
+          Already have an account? Login
+        </button>
+      </form>
+    </div>
   );
 }
 

@@ -1,18 +1,24 @@
 import React from 'react';
 import AddAgentForm from './AddAgentForm';
-import Logout from './Logout';
+import { useNavigate } from 'react-router-dom';
 
 function Dashboard() {
+     const navigate = useNavigate();
+    const logout  =() =>{
+      navigate("/login")
+    localStorage.setItem("token", null);
+}
   return (
     <div style={styles.container}>
+       <div style={styles.logoutSection}>
+        <button style={styles.logoutButton} onClick={logout} >Logout</button>
+      </div>
       <h1 style={styles.heading}>Welcome to Admin Dashboard</h1>
 
         <h2 style={styles.subHeading}>Add Agent</h2>
         <AddAgentForm />
 
-      <div style={styles.logoutSection}>
-        <Logout />
-      </div>
+     
     </div>
   );
 }
@@ -42,8 +48,16 @@ const styles = {
     margin: '0 auto 30px auto',
   },
   logoutSection: {
-    textAlign: 'center',
+    textAlign: 'end',
     marginTop: '40px',
+  },
+  logoutButton: {
+   width:100,
+   height:30,
+    backgroundColor:'blue',
+marginRight:40,
+color:'white',
+border:'none'
   },
 };
 
